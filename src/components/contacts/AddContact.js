@@ -1,5 +1,8 @@
-import React, { Component } from 'react';
-import TextInputGroup from '../layout/TextInputGroup';
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
+import TextInputGroup from '../layout/TextInputGroup'
+import { addContact } from '../../actions/contactActions'
 
 class AddContact extends Component {
   state = {
@@ -7,36 +10,36 @@ class AddContact extends Component {
     email: '',
     phone: '',
     errors: {}
-  };
+  }
 
-  onSubmit = (e) => {
-    e.preventDefault();
+  onSubmit = e => {
+    e.preventDefault()
 
-    const { name, email, phone } = this.state;
+    const { name, email, phone } = this.state
 
     // Check For Errors
     if (name === '') {
-      this.setState({ errors: { name: 'Name is required' } });
-      return;
+      this.setState({ errors: { name: 'Name is required' } })
+      return
     }
 
     if (email === '') {
-      this.setState({ errors: { email: 'Email is required' } });
-      return;
+      this.setState({ errors: { email: 'Email is required' } })
+      return
     }
 
     if (phone === '') {
-      this.setState({ errors: { phone: 'Phone is required' } });
-      return;
+      this.setState({ errors: { phone: 'Phone is required' } })
+      return
     }
 
     const newContact = {
       name,
       email,
       phone
-    };
+    }
 
-    //// SUBMIT CONTACT ////
+    this.props.addContact(newContact)
 
     // Clear State
     this.setState({
@@ -44,15 +47,15 @@ class AddContact extends Component {
       email: '',
       phone: '',
       errors: {}
-    });
+    })
 
-    this.props.history.push('/');
-  };
+    this.props.history.push('/')
+  }
 
-  onChange = e => this.setState({ [e.target.name]: e.target.value });
+  onChange = e => this.setState({ [e.target.name]: e.target.value })
 
   render() {
-    const { name, email, phone, errors } = this.state;
+    const { name, email, phone, errors } = this.state
 
     return (
       <div className="card mb-3">
@@ -92,8 +95,15 @@ class AddContact extends Component {
           </form>
         </div>
       </div>
-    );
+    )
   }
 }
 
-export default AddContact;
+AddContact.propTypes = {
+  addContact: PropTypes.func.isRequired
+}
+
+export default connect(
+  null,
+  { addContact }
+)(AddContact)

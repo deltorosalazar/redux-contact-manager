@@ -1,5 +1,8 @@
-import React, { Component } from 'react';
-import TextInputGroup from '../layout/TextInputGroup';
+import React, { Component } from 'react'
+import TextInputGroup from '../layout/TextInputGroup'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { getContact, updateContact } from '../../actions/contactActions'
 
 class EditContact extends Component {
   state = {
@@ -7,38 +10,60 @@ class EditContact extends Component {
     email: '',
     phone: '',
     errors: {}
-  };
+  }
 
-  onSubmit = (e) => {
-    e.preventDefault();
+  componentDidMount() {
+    const { id } = this.props.match.params
+    this.props.getContact(id)
+  }
 
-    const { name, email, phone } = this.state;
+  static getDerivedStateFromProps(props, state) {
+    if (props.contact) {
+      if (!state.name && !state.email && !state.phone) {
+        const { name, email, phone } = props.contact
+
+        return {
+          name,
+          email,
+          phone
+        }
+      }
+    }
+
+    return null
+  }
+
+  onSubmit = e => {
+    e.preventDefault()
+
+    const { name, email, phone } = this.state
 
     // Check For Errors
     if (name === '') {
-      this.setState({ errors: { name: 'Name is required' } });
-      return;
+      this.setState({ errors: { name: 'Name is required' } })
+      return
     }
 
     if (email === '') {
-      this.setState({ errors: { email: 'Email is required' } });
-      return;
+      this.setState({ errors: { email: 'Email is required' } })
+      return
     }
 
     if (phone === '') {
-      this.setState({ errors: { phone: 'Phone is required' } });
-      return;
+      this.setState({ errors: { phone: 'Phone is required' } })
+      return
     }
 
+    const { id } = this.props.match.params
+
     const updContact = {
+      id,
       name,
       email,
       phone
-    };
+    }
 
-    const { id } = this.props.match.params;
-
-    //// UPDATE CONTACT ////
+    this.props.updateContact(updContact)
 
     // Clear State
     this.setState({
@@ -46,15 +71,15 @@ class EditContact extends Component {
       email: '',
       phone: '',
       errors: {}
-    });
+    })
 
-    this.props.history.push('/');
-  };
+    this.props.history.push('/')
+  }
 
-  onChange = e => this.setState({ [e.target.name]: e.target.value });
+  onChange = e => this.setState({ [e.target.name]: e.target.value })
 
   render() {
-    const { name, email, phone, errors } = this.state;
+    const { name, email, phone, errors } = this.state
 
     return (
       <div className="card mb-3">
@@ -94,8 +119,23 @@ class EditContact extends Component {
           </form>
         </div>
       </div>
-    );
+    )
   }
 }
 
-export default EditContact;
+EditContact.propTypes = {
+  contact: PropTypes.object,
+  getContact: PropTypes.func
+}
+
+const mapStateToProps = state => ({
+  contact: state.contact.contact
+})
+
+export default connect(
+  mapStateToProps,
+  {
+    getContact,
+    updateContact
+  }
+)(EditContact)

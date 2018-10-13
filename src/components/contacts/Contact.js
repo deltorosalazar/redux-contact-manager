@@ -1,24 +1,26 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { deleteContact } from '../../actions/contactActions'
 
 class Contact extends Component {
   state = {
     showContactInfo: false
-  };
+  }
 
   onDeleteClick = id => {
-    //// DELETE CONTACT ////
-  };
+    this.props.deleteContact(id)
+  }
 
   render() {
-    const { id, name, email, phone } = this.props.contact;
-    const { showContactInfo } = this.state;
+    const { id, name, email, phone } = this.props.contact
+    const { showContactInfo } = this.state
 
     return (
       <div className="card card-body mb-3">
         <h4>
-          {name}{' '}
+          {name}
           <i
             onClick={() =>
               this.setState({
@@ -52,12 +54,16 @@ class Contact extends Component {
           </ul>
         ) : null}
       </div>
-    );
+    )
   }
 }
 
 Contact.propTypes = {
-  contact: PropTypes.object.isRequired
-};
+  contact: PropTypes.object.isRequired,
+  deleteContact: PropTypes.func.isRequired
+}
 
-export default Contact;
+export default connect(
+  null,
+  { deleteContact }
+)(Contact)
